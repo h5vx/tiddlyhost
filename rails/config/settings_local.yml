@@ -8,3 +8,23 @@ defaults:
   tiddlyhost_account_email: tiddlyhost@0wiki.ru
   devise_mailer_sender: '"0wiki" <tiddlyhost@0wiki.ru>'
   stripe_support_email: '"0wiki" <tiddlyhost@0wiki.ru>'
+
+development:
+  url_defaults:
+    :host: 0wiki.ru
+    # By "in container" we actually mean running with
+    # docker-compose up with the nginx front end
+    :protocol: "http"
+    :port: 80
+
+  tiddlyspot_host: tiddlyspot.com
+
+production:
+  url_defaults:
+    :host: 0wiki.ru
+    # By "in container" we actually mean running with
+    # docker-compose up with the nginx front end
+    :protocol: "http"
+    :port: 80
+
+  tiddlyspot_host: tiddlyspot.com

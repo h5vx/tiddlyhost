@@ -7,10 +7,10 @@ defaults:
   docs_url: https://github.com/simonbaird/tiddlyhost/wiki
   faq_url: https://github.com/simonbaird/tiddlyhost/wiki/FAQ
   create_issue_url: https://github.com/simonbaird/tiddlyhost/issues/new
-  prod_main_site_url: https://tiddlyhost.com
-  tiddlyhost_account_email: tiddlyhost@gmail.com
-  devise_mailer_sender: '"Tiddlyhost" <tiddlyhost@gmail.com>'
-  stripe_support_email: '"Tiddlyhost" <tiddlyhost@gmail.com>'
+  prod_main_site_url: https://0wiki.ru
+  tiddlyhost_account_email: tiddlyhost@0wiki.ru
+  devise_mailer_sender: '"0wiki" <tiddlyhost@0wiki.ru>'
+  stripe_support_email: '"0wiki" <tiddlyhost@0wiki.ru>'
   support_email: simon.baird@gmail.com
   support_email_name: Simon Baird
   default_user_type_name: basic
@@ -49,13 +49,13 @@ defaults:
 
 development:
   url_defaults:
-    :host: tiddlyhost.local
+    :host: 0wiki.ru
     # By "in container" we actually mean running with
     # docker-compose up with the nginx front end
-    :protocol: <%= is_in_container ? "https" : "http" %>
+    :protocol: http
     :port: <%= is_in_container ? nil : 3333 %>
 
-  tiddlyspot_host: tiddlyspot.local
+  tiddlyspot_host: tiddlyspot.com
 
 test:
   url_defaults:
@@ -66,9 +66,9 @@ test:
 
 production:
   url_defaults:
-    :host: tiddlyhost.com
+    :host: 0wiki.ru
     #:host: tiddlyhost.local
-    :protocol: https
+    :protocol: http
 
   tiddlyspot_host: tiddlyspot.com
   #tiddlyspot_host: tiddlyspot.local

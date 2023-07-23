@@ -25,7 +25,13 @@ docker/secrets
 docker/config
 docker/bundle
 docker/dotcache
+docker/dms
+docker/rainloop
+mailserver.env
+tiddly.env
 etc/certbot-dns-user-credentials.yml
 etc/docker-conf/
 etc/openrc.sh
 jsMath*.zip
+
+*.swp

@@ -1,17 +1,68 @@
 version: "3.0"
 
 services:
-  web:
-    image: nginx
-    container_name: th_web
-    depends_on:
-    - app
-    ports:
-    - "127.0.0.1:8080:80"
-    - "127.0.0.1:8443:443"
+  cache:
+    image: memcached
+    container_name: th_cache
+    command: memcached -I 8M
+    restart: unless-stopped
+
+  db:
+    image: postgres:13
+    container_name: th_db
+    environment:
+      # (Only used when the container sets up a brand new db IIUC)
+      POSTGRES_PASSWORD: postgres
+    # So we can use localhost for the rails db when running
+    # on bare metal rather than in the app container
+    #ports:
+    #- "127.0.0.1:5432:5432"
     volumes:
-    - ./docker/letsencrypt:/etc/letsencrypt:Z
-    - ./docker/nginx-conf:/etc/nginx/conf.d:Z
+    - ./docker/postgresql-data/data:/var/lib/postgresql/data:Z
+    restart: unless-stopped
+
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: mailserver
+    # Provide the FQDN of your mail server here (Your DNS MX record should point to this value)
+    hostname: mail.0wiki.ru
+    env_file: mailserver.env
+    # More information about the mail-server ports:
+    # https://docker-mailserver.github.io/docker-mailserver/latest/config/security/understanding-the-ports/
+    # To avoid conflicts with yaml base-60 float, DO NOT remove the quotation marks.
+    ports:
+      - "25:25"    # SMTP  (explicit TLS => STARTTLS)
+      - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
+      - "465:465"  # ESMTP (implicit TLS)
+      - "587:587"  # ESMTP (explicit TLS => STARTTLS)
+      - "993:993"  # IMAP4 (implicit TLS)
+    volumes:
+      - ./docker/dms/mail-data/:/var/mail/
+      - ./docker/dms/mail-state/:/var/mail-state/
+      - ./docker/dms/mail-logs/:/var/log/mail/
+      - ./docker/dms/config/:/tmp/docker-mailserver/
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: always
+    stop_grace_period: 1m
+    # Uncomment if using `ENABLE_FAIL2BAN=1`:
+    cap_add:
+      - NET_ADMIN
+    healthcheck:
+      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
+      timeout: 3s
+      retries: 0
+
+  rainloop:
+    image: hardware/rainloop
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8888:8888
+    volumes:
+      - ./docker/rainloop:/rainloop/data
+    depends_on:
+      - db
+      - mailserver
 
   app:
     image: sbaird/tiddlyhost-base:latest
@@ -25,8 +76,12 @@ services:
     - ./node_modules:/opt/node_modules:Z
     - ./docker/log:/var/log/app:Z
     - ./docker/dotcache:/home/appuser/.cache:Z
+    env_file: tiddly.env
     command: /bin/start-rails.sh
     restart: unless-stopped
+
+    ports:
+    - "127.0.0.1:8080:3333"
 
     security_opt:
     # Todo: Figure out what syscalls chrome sandbox really needs
@@ -46,6 +101,8 @@ services:
     depends_on:
     - db
     - cache
+    - mailserver
+
     volumes:
     - ./rails:/opt/app:Z
     - ./docker/bundle:/opt/bundle:Z
@@ -60,24 +117,4 @@ services:
     - "seccomp:unconfined"
 
     # It uses the same image as app so no need for build
-    restart: unless-stopped
-
-  cache:
-    image: memcached
-    container_name: th_cache
-    command: memcached -I 8M
-    restart: unless-stopped
-
-  db:
-    image: postgres:13
-    container_name: th_db
-    environment:
-      # (Only used when the container sets up a brand new db IIUC)
-      POSTGRES_PASSWORD: postgres
-    # So we can use localhost for the rails db when running
-    # on bare metal rather than in the app container
-    #ports:
-    #- "127.0.0.1:5432:5432"
-    volumes:
-    - ./docker/postgresql-data/data:/var/lib/postgresql/data:Z
     restart: unless-stopped

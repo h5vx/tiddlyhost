@@ -67,11 +67,11 @@ Rails.application.configure do
   # Configure email sending
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    user_name: Settings.secrets(:smtp_settings, :user_name),
-    password: Settings.secrets(:smtp_settings, :password),
-    domain: Settings.secrets(:smtp_settings, :domain) || 'gmail.com',
-    address: Settings.secrets(:smtp_settings, :address) || 'smtp.gmail.com',
-    port: 587,
+    user_name: ENV['TH_SMTP_USER'],
+    password: ENV['TH_SMTP_PASSWORD'],
+    domain: ENV['TH_SMTP_DOMAIN'],
+    address: ENV['TH_SMTP_HOST'],
+    port: ENV['TH_SMTP_PORT'],
     authentication: 'plain',
     enable_starttls_auto: true,
   }

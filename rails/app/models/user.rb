@@ -36,7 +36,7 @@ class User < ApplicationRecord
       allow_blank: true,
     },
     length: {
-      minimum: 3,
+      minimum: 5,
       maximum: 30,
       allow_blank: true,
     },
