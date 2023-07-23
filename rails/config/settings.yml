@@ -11,8 +11,8 @@ defaults:
   tiddlyhost_account_email: tiddlyhost@0wiki.ru
   devise_mailer_sender: '"0wiki" <tiddlyhost@0wiki.ru>'
   stripe_support_email: '"0wiki" <tiddlyhost@0wiki.ru>'
-  support_email: simon.baird@gmail.com
-  support_email_name: Simon Baird
+  support_email: info@0wiki.ru
+  support_email_name: 0wiki staff
   default_user_type_name: basic
   default_empty_name: tw5
   minimum_password_length: 8
