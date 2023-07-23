@@ -28,7 +28,7 @@ class Site < ApplicationRecord
     uniqueness: true,
     length: {
       # Let's reserve sites with one or two letter names
-      minimum: 3,
+      minimum: 6,
       # RFC1035 says 63 is the maximum size of a subdomain...
       maximum: 63,
     },
